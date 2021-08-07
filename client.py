@@ -2,8 +2,8 @@ import socket
 import threading as thr
 import PySimpleGUI as sg
 import rsa
-from rsa import PublicKey, PrivateKey
-import random
+from rsa import PublicKey
+
 HOST = '127.0.0.1'
 PORT = 42042
 publicKey, privateKey = rsa.newkeys(2048)
