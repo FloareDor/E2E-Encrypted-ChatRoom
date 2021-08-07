@@ -4,7 +4,7 @@
 
 ### How to host your own Encrypted ChatRoom?
 * Input the IP address of the public server you want to host the chatroom on, in server.py file and run the file.
-* Share the client.py with all of the people you wanna invite over to the chat room.
+* Share the client.py file with all of the people you wanna invite over to the chat room.
 * Install the necessary libraries that are mentioned in the Requirements.txt file on the client side.
 * Run the client.py file.
 * Input a temporary nickname.
