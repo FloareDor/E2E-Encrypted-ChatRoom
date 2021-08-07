@@ -4,10 +4,10 @@ import PySimpleGUI as sg
 import rsa
 from rsa import PublicKey, PrivateKey
 import random
-HOST = '127.0.0.1' # Change the host here
+HOST = '127.0.0.1'
 PORT = 42042
 publicKey, privateKey = rsa.newkeys(2048)
-publicKeys = []
+publicKeys = []	
 caesar_Key = 69
 header_Size = 10
 def caesar_Encrypt(string,s):
@@ -17,6 +17,7 @@ def caesar_Encrypt(string,s):
 			if c.isupper():
 				result += chr((ord(c) + s - 65) % 26 + 65)
 			else:
+				#result += chr(ord(c) + s)
 				result += chr((ord(c) + s - 97) % 26 + 97)
 		else:
 			result += c
@@ -43,6 +44,7 @@ def assemble_pub_key_from_string(pub_key):
 	k = list(pub_key.decode('ISO-8859-1').split(','))
 	pub_key = PublicKey(int(k[0]),int(k[1]))
 	return pub_key
+
 QT_ENTER_KEY1 =  'special 16777220'
 QT_ENTER_KEY2 =  'special 16777221'
 
@@ -59,6 +61,7 @@ def has_alpha(s):
 def receive():
 	while True:
 		try:
+
 			message = client.recv(2048)
 
 			decoded_Msg = message.decode('ISO-8859-1')
@@ -84,28 +87,23 @@ def receive():
 						try:
 							decMessage = rsa.decrypt(message, privateKey).decode()
 							decMessage = caesar_Decrypt(decMessage, int(turn_pub_key_to_string(publicKey).decode('ISO-8859-1')[caesar_Key]))
-
 							print(decMessage)
 						except Exception as e:
-
 							pass
-						
-
 		except Exception as e:
 			print(f"total: {e}")
 			print("An Error Occurred!")
 			client.close()
 			break
 
-
-
 receive_thread = thr.Thread(target = receive)
-
 
 sg.theme('Black')   # Add a touch of color
 
+# All the stuff inside the window.
 layout = [  [sg.Text('Your Message:'), sg.InputText(key = "Input")],
-            [sg.Button('Send', key = "Send"), sg.Button('Cancel')] ]
+            [sg.Button('Send', key = "Send"), sg.Button('Cancel')], 
+			[sg.Button('Show Encrypted Message', key = "Show_Encrypted_Message")]]
 
 # Create the Window
 window = sg.Window('ChatRoom', layout, return_keyboard_events=True, use_default_focus=True)
@@ -121,20 +119,29 @@ while True:
 	event, values = window.read()
 	if event == sg.WIN_CLOSED or event == 'Cancel': # if user closes window or clicks cancel
 		break
-	if event in ('\r', QT_ENTER_KEY1, QT_ENTER_KEY2):       
-		elem = window.FindElementWithFocus()                          
-		if elem is not None and elem.Type == sg.ELEM_TYPE_BUTTON:      
+	if event in ('\r', QT_ENTER_KEY1, QT_ENTER_KEY2):
+		elem = window.FindElementWithFocus()
+		if elem is not None and elem.Type == sg.ELEM_TYPE_BUTTON:
 			window.Element("Send").Click()
 	elif event == 'Send':
 		message = f"{name}: {values['Input']}"
-		
 		if values["Input"] != "":
 			for key in publicKeys:
 				encMessage = caesar_Encrypt(message, int(key.decode('ISO-8859-1')[caesar_Key]))
 				encMessage = rsa.encrypt(encMessage.encode('ISO-8859-1'), assemble_pub_key_from_string(key))
-				#print(len(encMessage))
 				client.send(encMessage)
 			window["Input"].Update('')
+	elif event == "Show_Encrypted_Message":
+		message = f"{name}: {values['Input']}"
+		if values["Input"] != "":
+			x = caesar_Encrypt(message, int(turn_pub_key_to_string(publicKey).decode('ISO-8859-1')[caesar_Key]))
+			xy = rsa.encrypt(x.encode('ISO-8859-1'), publicKey)
+			print(f"Your Encrypted Message: {xy.decode('ISO-8859-1')}")
+			for key in publicKeys:
+				encMessage = caesar_Encrypt(message, int(key.decode('ISO-8859-1')[caesar_Key]))
+				encMessage = rsa.encrypt(encMessage.encode('ISO-8859-1'), assemble_pub_key_from_string(key))
 
+				client.send(encMessage)
+			window["Input"].Update('')
 window.close()
 client.close()
