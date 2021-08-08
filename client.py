@@ -4,8 +4,8 @@ import PySimpleGUI as sg
 import rsa
 from rsa import PublicKey
 
-HOST = '127.0.0.1'
-PORT = 42042
+HOST = '127.0.0.1' # change the host
+PORT = 55559
 publicKey, privateKey = rsa.newkeys(2048)
 publicKeys = []	
 caesar_Key = 69
@@ -74,7 +74,7 @@ def receive():
 				msg = client.recv(638)
 				decoded_Msg = msg.decode('ISO-8859-1')
 				if decoded_Msg[-15:] == "420420420696969" and not has_alpha(decoded_Msg):
-					msg = decoded_Msg[:-15]
+					msg = decoded_Msg[:-15]	
 					if msg.encode('ISO-8859-1') not in publicKeys:
 						publicKeys.append(msg.encode('ISO-8859-1'))
 			else:
@@ -94,6 +94,7 @@ def receive():
 							print(decMessage)
 							
 						except Exception as e:
+							print(e)
 							pass
 		except Exception as e:
 			print("An Error Occurred!")
@@ -130,6 +131,7 @@ while True:
 	elif event == 'Send':
 		message = f"{name}: {values['Input']}"
 		if values["Input"] != "":
+			print(publicKeys)
 			for key in publicKeys:
 				encMessage = caesar_Encrypt(message, int(key.decode('ISO-8859-1')[caesar_Key]))
 				encMessage = rsa.encrypt(encMessage.encode('ISO-8859-1'), assemble_pub_key_from_string(key))
@@ -141,6 +143,7 @@ while True:
 			x = caesar_Encrypt(message, int(turn_pub_key_to_string(publicKey).decode('ISO-8859-1')[caesar_Key]))
 			xy = rsa.encrypt(x.encode('ISO-8859-1'), publicKey)
 			print(f"Your Encrypted Message: {xy.decode('ISO-8859-1')}")
+			
 			for key in publicKeys:
 				encMessage = caesar_Encrypt(message, int(key.decode('ISO-8859-1')[caesar_Key]))
 				encMessage = rsa.encrypt(encMessage.encode('ISO-8859-1'), assemble_pub_key_from_string(key))

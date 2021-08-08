@@ -4,7 +4,7 @@ import time
 
 # local host
 host = '127.0.0.1' # Change the host 
-port = 42042
+port = 55559
 print(host,port)
 header_Size = 10
 publicKeys = []
@@ -28,6 +28,7 @@ def handle(client):
 			message = client.recv(256) # 1024 bytes
 			broadcast(message)
 			broadcast(b'')
+			print(publicKeys)
 		except:
 			index = clients.index(client)
 			clients.remove(client)
@@ -60,9 +61,13 @@ def recieve():
 
 		if key.encode('ISO-8859-1') not in publicKeys:
 			publicKeys.append(key.encode('ISO-8859-1'))
-			for pk in publicKeys:
-				broadcast(('RECEIVE_KEY' + (245*'x')).encode('ISO-8859-1'))
-				broadcast(pk)
+
+		for pk in publicKeys:
+			broadcast(('RECEIVE_KEY' + (245*'x')).encode('ISO-8859-1'))
+			print(pk)
+			time.sleep(0.1)
+			broadcast(pk)
+			time.sleep(0.1)
 
 		print(f"name of the client is {name}!")
 		broadcast_msg = f"{name} joined the chat!"
@@ -77,8 +82,3 @@ def recieve():
 
 print("Server is running")
 recieve()
-
-
-
-
-
