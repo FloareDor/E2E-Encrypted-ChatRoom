@@ -1,5 +1,5 @@
 # E2E-Encrypted-ChatRoom
-### A Simple End to End Encrypted ChatRoom built using sockets, based on RSA algorithm (PKCS#1 version 1.5).
+### An End to End Encrypted ChatRoom built using sockets, based on RSA algorithm (PKCS#1 version 1.5).
 #### The messages are encrypted by rsa (2048 bytes key) and caesar cipher. A new key pair is generated everytime a client connects to the server and the private key will only be with the respective client only.So, the privacy is indeed very strong. No one else but the sender and the recipient can see the messages. In addition, the caesar shift number is also randomly generated for each client.
 
 ### How to host your own Encrypted ChatRoom?
