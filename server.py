@@ -28,9 +28,6 @@ def handle(client):
 			message = client.recv(256) # 1024 bytes
 			broadcast(message)
 			broadcast(b'')
-			#print(message)
-			#for pk in publicKeys:
-				#broadcast(pk)
 		except:
 			index = clients.index(client)
 			clients.remove(client)
@@ -39,8 +36,10 @@ def handle(client):
 			key = publicKeys[index]
 			publicKeys.remove(key)
 
-			left_Message = f"{name} left the chat."
-			broadcast(left_Message.encode('ISO-8859-1'))
+			left_Message = f"{name} left the chat!"
+			extra = 256 - len(left_Message)
+			broadcast_msg = left_Message + extra*'x'
+			broadcast(broadcast_msg.encode('ISO-8859-1'))
 			names.remove(name)
 			break
 
@@ -48,30 +47,30 @@ def recieve():
 	while True:
 		client, address = server.accept()
 		print(f"Connected with {str(address)}")
-		client.send('NAME'.encode('ISO-8859-1'))
+		client.send(('NAME' + str(252*'x')).encode('ISO-8859-1'))
 		try:
 			name = client.recv(1024).decode('ISO-8859-1')
 			names.append(name)
 		except:
 			pass
 		clients.append(client)
-		client.send('COLLECT_KEY'.encode('ISO-8859-1'))
-		key = client.recv(2048)
-		#print(key.decode('ISO-8859-1'))
+		client.send(('COLLECT_KEY' + 245*'x').encode('ISO-8859-1'))
+		key = client.recv(623)
 		key = key.decode('ISO-8859-1') + "420420420696969"
-		#broadcast(key.encode('ISO-8859-1'))
 
 		if key.encode('ISO-8859-1') not in publicKeys:
 			publicKeys.append(key.encode('ISO-8859-1'))
 			for pk in publicKeys:
+				broadcast(('RECEIVE_KEY' + (245*'x')).encode('ISO-8859-1'))
 				broadcast(pk)
-				time.sleep(1)
+
 		print(f"name of the client is {name}!")
 		broadcast_msg = f"{name} joined the chat!"
-		time.sleep(1.5)
+		extra = 256 - len(broadcast_msg)
+		broadcast_msg = broadcast_msg + extra*'x'
+		time.sleep(1)
 		
 		broadcast(broadcast_msg.encode('ISO-8859-1'))
-		#client.send('Connected to the server!\n'.encode('ISO-8859-1'))
 		
 		thread = thr.Thread(target = handle, args = (client,))
 		thread.start()

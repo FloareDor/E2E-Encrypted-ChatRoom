@@ -61,37 +61,41 @@ def has_alpha(s):
 def receive():
 	while True:
 		try:
-
-			message = client.recv(2048)
+			message = client.recv(256)
 
 			decoded_Msg = message.decode('ISO-8859-1')
-			if message == b'NAME':
+			if 'NAME' in decoded_Msg:
 				client.send(name.encode('ISO-8859-1'))
 				print('Connected to the server!')
-
 				pass
-			elif decoded_Msg == 'COLLECT_KEY':
+			elif 'COLLECT_KEY' in decoded_Msg:
 				client.send(turn_pub_key_to_string(publicKey))
-			elif decoded_Msg[-15:] == "420420420696969" and not has_alpha(decoded_Msg):
-				msg = decoded_Msg[:-15]
-
-				if msg.encode('ISO-8859-1') not in publicKeys:
-					publicKeys.append(msg.encode('ISO-8859-1'))
-
+			elif 'RECEIVE_KEY' in decoded_Msg:
+				msg = client.recv(638)
+				decoded_Msg = msg.decode('ISO-8859-1')
+				if decoded_Msg[-15:] == "420420420696969" and not has_alpha(decoded_Msg):
+					msg = decoded_Msg[:-15]
+					if msg.encode('ISO-8859-1') not in publicKeys:
+						publicKeys.append(msg.encode('ISO-8859-1'))
 			else:
 				if message != b'':
-
-					if message == b'Connected to the server!' or 'joined the chat!' in decoded_Msg or 'left the chat.' in decoded_Msg:
-						print(message.decode('ISO-8859-1'))
+					if message == b'Connected to the server!':
+						print(decoded_Msg)
+					elif 'left the chat!' in decoded_Msg:
+						message = decoded_Msg.split('left the chat!')[0] + 'left the chat.'
+						print(message)
+					elif 'joined the chat!' in decoded_Msg:
+						message = decoded_Msg.split('joined the chat!')[0] + 'joined the chat!'
+						print(message)
 					else:
 						try:
 							decMessage = rsa.decrypt(message, privateKey).decode()
 							decMessage = caesar_Decrypt(decMessage, int(turn_pub_key_to_string(publicKey).decode('ISO-8859-1')[caesar_Key]))
 							print(decMessage)
+							
 						except Exception as e:
 							pass
 		except Exception as e:
-			print(f"total: {e}")
 			print("An Error Occurred!")
 			client.close()
 			break
@@ -140,7 +144,6 @@ while True:
 			for key in publicKeys:
 				encMessage = caesar_Encrypt(message, int(key.decode('ISO-8859-1')[caesar_Key]))
 				encMessage = rsa.encrypt(encMessage.encode('ISO-8859-1'), assemble_pub_key_from_string(key))
-
 				client.send(encMessage)
 			window["Input"].Update('')
 window.close()
