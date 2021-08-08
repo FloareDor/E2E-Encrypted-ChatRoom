@@ -28,7 +28,7 @@ def handle(client):
 			message = client.recv(256) # 1024 bytes
 			broadcast(message)
 			broadcast(b'')
-			print(publicKeys)
+			#print(publicKeys)
 		except:
 			index = clients.index(client)
 			clients.remove(client)
@@ -64,7 +64,7 @@ def recieve():
 
 		for pk in publicKeys:
 			broadcast(('RECEIVE_KEY' + (245*'x')).encode('ISO-8859-1'))
-			print(pk)
+			#print(pk)
 			time.sleep(0.1)
 			broadcast(pk)
 			time.sleep(0.1)

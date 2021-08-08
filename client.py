@@ -94,7 +94,7 @@ def receive():
 							print(decMessage)
 							
 						except Exception as e:
-							print(e)
+							#print(e)
 							pass
 		except Exception as e:
 			print("An Error Occurred!")
@@ -131,7 +131,7 @@ while True:
 	elif event == 'Send':
 		message = f"{name}: {values['Input']}"
 		if values["Input"] != "":
-			print(publicKeys)
+			#print(publicKeys)
 			for key in publicKeys:
 				encMessage = caesar_Encrypt(message, int(key.decode('ISO-8859-1')[caesar_Key]))
 				encMessage = rsa.encrypt(encMessage.encode('ISO-8859-1'), assemble_pub_key_from_string(key))
