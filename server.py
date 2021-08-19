@@ -3,8 +3,8 @@ import threading as thr
 import time
 
 # local host
-host = '127.0.0.1' # Change the host 
-port = 55559
+host = 'server.srikar.tech' # Change the host 
+port = 55543
 print(host,port)
 header_Size = 10
 publicKeys = []
@@ -65,9 +65,9 @@ def recieve():
 		for pk in publicKeys:
 			broadcast(('RECEIVE_KEY' + (245*'x')).encode('ISO-8859-1'))
 			#print(pk)
-			time.sleep(0.1)
+			time.sleep(0.5)
 			broadcast(pk)
-			time.sleep(0.1)
+			time.sleep(0.5)
 
 		print(f"name of the client is {name}!")
 		broadcast_msg = f"{name} joined the chat!"

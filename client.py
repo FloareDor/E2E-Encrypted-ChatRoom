@@ -3,11 +3,10 @@ import threading as thr
 import PySimpleGUI as sg
 import rsa
 from rsa import PublicKey
-
-HOST = '127.0.0.1' # change the host
-PORT = 55559
+HOST = 'server.srikar.tech' # change the host
+PORT = 55543
 publicKey, privateKey = rsa.newkeys(2048)
-publicKeys = []	
+publicKeys = []
 caesar_Key = 69
 header_Size = 10
 def caesar_Encrypt(string,s):
@@ -74,7 +73,7 @@ def receive():
 				msg = client.recv(638)
 				decoded_Msg = msg.decode('ISO-8859-1')
 				if decoded_Msg[-15:] == "420420420696969" and not has_alpha(decoded_Msg):
-					msg = decoded_Msg[:-15]	
+					msg = decoded_Msg[:-15]
 					if msg.encode('ISO-8859-1') not in publicKeys:
 						publicKeys.append(msg.encode('ISO-8859-1'))
 			else:
@@ -97,6 +96,7 @@ def receive():
 							#print(e)
 							pass
 		except Exception as e:
+			print(e)
 			print("An Error Occurred!")
 			client.close()
 			break
